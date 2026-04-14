@@ -1,11 +1,25 @@
-{\rtf1\ansi\ansicpg1252\cocoartf2868
-\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 .AppleSystemUIFontMonospaced-Regular;}
-{\colortbl;\red255\green255\blue255;\red24\green26\blue30;}
-{\*\expandedcolortbl;;\cssrgb\c12157\c13725\c15686;}
-\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
-\deftab720
-\pard\pardeftab720\partightenfactor0
+# Rescue App
 
-\f0\fs28 \cf2 \expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec2 README.md\
-}
+The Rescue App is a Flutter application that implements a BLoC + RxDart architecture for managing emergency events. 
+
+## Features
+- Role-based UI and navigation with a 4-tab bottom navigation (Users, Events, PTT, Groups).
+- Covers localization (English and Arabic).
+- Dio-based API client with JWT for authentication and API calls.
+- Deep link routing to open event details from links.
+
+## APIs Used
+- `POST /api/token/`: Obtain JWT token.
+- `POST /api/token/refresh/`: Refresh JWT token.
+- `GET /api/user/profile/`: Fetch user profile.
+- `GET /api/user/location/`: Fetch user location.
+- `GET /api/alerts/`: Fetch alerts.
+- `GET /api/alerts/nearby/`: Fetch nearby alerts.
+- `GET /api/group/`: Fetch user groups.
+- `GET /api/message/`: Fetch messages.
+
+## Running the Project
+1. Clone the repository.
+2. Navigate to the `mobile/rescue_app` directory.
+3. Install the Flutter dependencies.
+4. Run the app using `flutter run`.
