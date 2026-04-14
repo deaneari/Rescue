@@ -4,7 +4,7 @@ The Rescue App is a Flutter application that implements a BLoC + RxDart architec
 
 ## Features
 - Role-based UI and navigation with a 4-tab bottom navigation (Users, Events, PTT, Groups).
-- Covers localization (English and Arabic).
+- Covers localization (English and Hebrew).
 - Dio-based API client with JWT for authentication and API calls.
 - Deep link routing to open event details from links.
 
@@ -17,6 +17,10 @@ The Rescue App is a Flutter application that implements a BLoC + RxDart architec
 - `GET /api/alerts/nearby/`: Fetch nearby alerts.
 - `GET /api/group/`: Fetch user groups.
 - `GET /api/message/`: Fetch messages.
+
+## Data
+
+
 
 ## Running the Project
 1. Clone the repository.
