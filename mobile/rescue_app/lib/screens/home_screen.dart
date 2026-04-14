@@ -1,4 +1,11 @@
+import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
+import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:flutter/material.dart';
+
+import 'event_tab_screen.dart';
+import 'groups_tab_screen.dart';
+import 'ptt_tab_screen.dart';
+import 'users_tab_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -8,28 +15,57 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 1;
+  int _selectedIndex = 0;
 
-  static const List<BottomNavigationBarItem> _items = <BottomNavigationBarItem>[
-    BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Users'),
-    BottomNavigationBarItem(icon: Icon(Icons.warning), label: 'Events'),
-    BottomNavigationBarItem(icon: Icon(Icons.mic), label: 'PTT'),
-    BottomNavigationBarItem(icon: Icon(Icons.groups), label: 'Groups'),
+  static const List<String> _titles = <String>[
+    'משתמשים',
+    'אירועים',
+    'PTT',
+    'קבוצות',
+  ];
+
+  static const List<CurvedNavigationBarItem> _items = <CurvedNavigationBarItem>[
+    CurvedNavigationBarItem(
+      child: Icon(Icons.people),
+      label: 'משתמשים',
+    ),
+    CurvedNavigationBarItem(
+      child: Icon(Icons.warning),
+      label: 'אירועים',
+    ),
+    CurvedNavigationBarItem(
+      child: Icon(Icons.mic),
+      label: 'PTT',
+    ),
+    CurvedNavigationBarItem(
+      child: Icon(Icons.groups),
+      label: 'קבוצות',
+    ),
+  ];
+
+  static const List<Widget> _screens = <Widget>[
+    UsersTabScreen(),
+    EventTabScreen(),
+    PttTabScreen(),
+    GroupsTabScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Rescue App')),
-      body: Center(
-        child: Text(
-          _items[_selectedIndex].label ?? '',
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-        ),
+      appBar: AppBar(title: Text(_titles[_selectedIndex])),
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _screens,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
+      bottomNavigationBar: CurvedNavigationBar(
+        index: _selectedIndex,
         items: _items,
+        color: Colors.purple.shade300,
+        buttonBackgroundColor: Colors.deepPurple,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        animationDuration: const Duration(milliseconds: 300),
+        height: 78,
         onTap: (index) {
           setState(() {
             _selectedIndex = index;

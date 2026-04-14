@@ -4,7 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'localization/language_constants.dart';
 import 'screens/home_screen.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Rescue App',
+      title: 'אפליקציית הצלה',
       supportedLocales: [
         const Locale('en', ''), // English
         const Locale('ar', ''), // Arabic
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
         VTranslation.delegate,
       ],
-      home: HomeScreen(),
+      home: const HomeScreen(),
     );
   }
 }
