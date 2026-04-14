@@ -1,0 +1,16 @@
+# Flutter and Dart
+.dart_tool/
+.packages
+.pub/
+build/
+
+# IDE
+.idea/
+.vscode/
+
+# macOS
+.DS_Store
+
+# Flutter generated plugin registrant files per platform
+.flutter-plugins
+.flutter-plugins-dependencies

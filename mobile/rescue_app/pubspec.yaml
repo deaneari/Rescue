@@ -1,0 +1,28 @@
+name: rescue_app
+description: Rescue emergency mobile application
+publish_to: none
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  rxdart: ^0.28.0
+  flutter_bloc: ^9.1.1
+  equatable: ^2.0.5
+  dio: ^5.9.0
+  go_router: ^14.8.1
+  intl: ^0.20.2
+  firebase_messaging: ^15.2.10
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
