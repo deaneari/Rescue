@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'event_tab_screen.dart';
 import 'groups_tab_screen.dart';
+import 'map_tab_screen.dart';
 import 'ptt_tab_screen.dart';
 import 'users_tab_screen.dart';
 
@@ -22,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
     'אירועים',
     'PTT',
     'קבוצות',
+    'מפה',
   ];
 
   static const List<CurvedNavigationBarItem> _items = <CurvedNavigationBarItem>[
@@ -41,6 +43,10 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Icon(Icons.groups),
       label: 'קבוצות',
     ),
+    CurvedNavigationBarItem(
+      child: Icon(Icons.map),
+      label: 'מפה',
+    ),
   ];
 
   static const List<Widget> _screens = <Widget>[
@@ -48,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
     EventTabScreen(),
     PttTabScreen(),
     GroupsTabScreen(),
+    MapTabScreen(),
   ];
 
   @override

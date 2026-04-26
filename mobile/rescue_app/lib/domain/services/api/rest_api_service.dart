@@ -1,8 +1,11 @@
 import 'package:dio/dio.dart';
+import 'package:rescue_app/managers/storage_manager.dart';
 
 import 'rest_api_models.dart';
 
 class RestApiService {
+  static final String baseUrl = "";
+
   RestApiService({
     required String baseUrl,
     Dio? dio,
@@ -17,10 +20,16 @@ class RestApiService {
             ) {
     _dio.interceptors.add(
       InterceptorsWrapper(
-        onRequest: (options, handler) {
-          if (_accessToken != null && _accessToken!.isNotEmpty) {
+        onRequest: (options, handler) async {
+          final String? storedAuthorization =
+              await StorageManager.instance.authorization();
+
+          if (storedAuthorization != null && storedAuthorization.isNotEmpty) {
+            options.headers['Authorization'] = storedAuthorization;
+          } else if (_accessToken != null && _accessToken!.isNotEmpty) {
             options.headers['Authorization'] = 'Bearer $_accessToken';
           }
+
           handler.next(options);
         },
       ),
@@ -48,7 +57,7 @@ class RestApiService {
     required String username,
     required String password,
   }) async {
-    final response = await _dio.post<dynamic>(
+    final response = await _safePost(
       '/api/token/',
       data: <String, dynamic>{
         'username': username,
@@ -67,7 +76,7 @@ class RestApiService {
       throw StateError('No refresh token set. Call obtainToken first.');
     }
 
-    final response = await _dio.post<dynamic>(
+    final response = await _safePost(
       '/api/token/refresh/',
       data: <String, dynamic>{'refresh': token},
     );
@@ -79,7 +88,7 @@ class RestApiService {
   }
 
   Future<List<dynamic>> listUsers() async {
-    final response = await _dio.get<dynamic>('/api/user/');
+    final response = await _safeGet('/api/user/');
     return _asList(response.data);
   }
 
@@ -88,7 +97,7 @@ class RestApiService {
     required double latitude,
     required double longitude,
   }) async {
-    final response = await _dio.post<dynamic>(
+    final response = await _safePost(
       '/api/user/',
       data: <String, dynamic>{
         'role': role,
@@ -100,7 +109,7 @@ class RestApiService {
   }
 
   Future<Map<String, dynamic>> getUserProfile(int id) async {
-    final response = await _dio.get<dynamic>('/api/user/$id/');
+    final response = await _safeGet('/api/user/$id/');
     return _asMap(response.data);
   }
 
@@ -110,7 +119,7 @@ class RestApiService {
     required double latitude,
     required double longitude,
   }) async {
-    final response = await _dio.put<dynamic>(
+    final response = await _safePut(
       '/api/user/$id/',
       data: <String, dynamic>{
         'role': role,
@@ -132,19 +141,19 @@ class RestApiService {
     if (latitude != null) data['latitude'] = latitude;
     if (longitude != null) data['longitude'] = longitude;
 
-    final response = await _dio.patch<dynamic>('/api/user/$id/', data: data);
+    final response = await _safePatch('/api/user/$id/', data: data);
     return _asMap(response.data);
   }
 
   Future<void> deleteUserProfile(int id) async {
-    await _dio.delete<dynamic>('/api/user/$id/');
+    await _safeDelete('/api/user/$id/');
   }
 
   Future<Map<String, dynamic>> updateCurrentUserLocation({
     required double latitude,
     required double longitude,
   }) async {
-    final response = await _dio.post<dynamic>(
+    final response = await _safePost(
       '/api/user/location/',
       data: <String, dynamic>{
         'latitude': latitude,
@@ -155,19 +164,19 @@ class RestApiService {
   }
 
   Future<List<dynamic>> listUsersWithCoordinates() async {
-    final response = await _dio.get<dynamic>('/api/user/all/');
+    final response = await _safeGet('/api/user/all/');
     return _asList(response.data);
   }
 
   Future<Map<String, dynamic>> getCurrentUserProfile() async {
-    final response = await _dio.get<dynamic>('/api/user/profile/');
+    final response = await _safeGet('/api/user/profile/');
     return _asMap(response.data);
   }
 
   Future<Map<String, dynamic>> updateCurrentUserProfile(
     Map<String, dynamic> fields,
   ) async {
-    final response = await _dio.put<dynamic>(
+    final response = await _safePut(
       '/api/user/update_profile/',
       data: fields,
     );
@@ -175,7 +184,7 @@ class RestApiService {
   }
 
   Future<List<dynamic>> listGroups() async {
-    final response = await _dio.get<dynamic>('/api/group/');
+    final response = await _safeGet('/api/group/');
     return _asList(response.data);
   }
 
@@ -183,7 +192,7 @@ class RestApiService {
     required String name,
     required List<int> members,
   }) async {
-    final response = await _dio.post<dynamic>(
+    final response = await _safePost(
       '/api/group/',
       data: <String, dynamic>{
         'name': name,
@@ -194,7 +203,7 @@ class RestApiService {
   }
 
   Future<Map<String, dynamic>> getGroup(int id) async {
-    final response = await _dio.get<dynamic>('/api/group/$id/');
+    final response = await _safeGet('/api/group/$id/');
     return _asMap(response.data);
   }
 
@@ -203,7 +212,7 @@ class RestApiService {
     required String name,
     required List<int> members,
   }) async {
-    final response = await _dio.put<dynamic>(
+    final response = await _safePut(
       '/api/group/$id/',
       data: <String, dynamic>{
         'name': name,
@@ -222,19 +231,19 @@ class RestApiService {
     if (name != null) data['name'] = name;
     if (members != null) data['members'] = members;
 
-    final response = await _dio.patch<dynamic>('/api/group/$id/', data: data);
+    final response = await _safePatch('/api/group/$id/', data: data);
     return _asMap(response.data);
   }
 
   Future<void> deleteGroup(int id) async {
-    await _dio.delete<dynamic>('/api/group/$id/');
+    await _safeDelete('/api/group/$id/');
   }
 
   Future<Map<String, dynamic>> addUserToGroup({
     required int groupId,
     required int userId,
   }) async {
-    final response = await _dio.post<dynamic>(
+    final response = await _safePost(
       '/api/group/$groupId/add_user/',
       data: <String, dynamic>{'user_id': userId},
     );
@@ -245,7 +254,7 @@ class RestApiService {
     required int groupId,
     required int userId,
   }) async {
-    final response = await _dio.delete<dynamic>(
+    final response = await _safeDelete(
       '/api/group/$groupId/remove_user/',
       data: <String, dynamic>{'user_id': userId},
     );
@@ -253,7 +262,7 @@ class RestApiService {
   }
 
   Future<List<dynamic>> listMessages() async {
-    final response = await _dio.get<dynamic>('/api/message/');
+    final response = await _safeGet('/api/message/');
     return _asList(response.data);
   }
 
@@ -272,12 +281,12 @@ class RestApiService {
       longitude: longitude,
     );
 
-    final response = await _dio.post<dynamic>('/api/message/', data: payload);
+    final response = await _safePost('/api/message/', data: payload);
     return _asMap(response.data);
   }
 
   Future<Map<String, dynamic>> getMessage(int id) async {
-    final response = await _dio.get<dynamic>('/api/message/$id/');
+    final response = await _safeGet('/api/message/$id/');
     return _asMap(response.data);
   }
 
@@ -297,8 +306,7 @@ class RestApiService {
       longitude: longitude,
     );
 
-    final response =
-        await _dio.put<dynamic>('/api/message/$id/', data: payload);
+    final response = await _safePut('/api/message/$id/', data: payload);
     return _asMap(response.data);
   }
 
@@ -319,7 +327,7 @@ class RestApiService {
       skipNulls: true,
     );
 
-    final response = await _dio.patch<dynamic>(
+    final response = await _safePatch(
       '/api/message/$id/',
       data: payload,
     );
@@ -327,22 +335,22 @@ class RestApiService {
   }
 
   Future<void> deleteMessage(int id) async {
-    await _dio.delete<dynamic>('/api/message/$id/');
+    await _safeDelete('/api/message/$id/');
   }
 
   Future<List<dynamic>> listMessagesNewestFirst() async {
-    final response = await _dio.get<dynamic>('/api/message/list_messages/');
+    final response = await _safeGet('/api/message/list_messages/');
     return _asList(response.data);
   }
 
   Future<List<dynamic>> listNotifications() async {
-    final response = await _dio.get<dynamic>('/api/notification/');
+    final response = await _safeGet('/api/notification/');
     return _asList(response.data);
   }
 
   Future<Map<String, dynamic>> createNotification(
       {required String token}) async {
-    final response = await _dio.post<dynamic>(
+    final response = await _safePost(
       '/api/notification/',
       data: <String, dynamic>{'token': token},
     );
@@ -350,7 +358,7 @@ class RestApiService {
   }
 
   Future<Map<String, dynamic>> getNotification(int id) async {
-    final response = await _dio.get<dynamic>('/api/notification/$id/');
+    final response = await _safeGet('/api/notification/$id/');
     return _asMap(response.data);
   }
 
@@ -358,7 +366,7 @@ class RestApiService {
     required int id,
     required String token,
   }) async {
-    final response = await _dio.put<dynamic>(
+    final response = await _safePut(
       '/api/notification/$id/',
       data: <String, dynamic>{'token': token},
     );
@@ -369,7 +377,7 @@ class RestApiService {
     required int id,
     required String token,
   }) async {
-    final response = await _dio.patch<dynamic>(
+    final response = await _safePatch(
       '/api/notification/$id/',
       data: <String, dynamic>{'token': token},
     );
@@ -377,11 +385,11 @@ class RestApiService {
   }
 
   Future<void> deleteNotification(int id) async {
-    await _dio.delete<dynamic>('/api/notification/$id/');
+    await _safeDelete('/api/notification/$id/');
   }
 
   Future<List<dynamic>> listAlerts() async {
-    final response = await _dio.get<dynamic>('/api/alerts/');
+    final response = await _safeGet('/api/alerts/');
     return _asList(response.data);
   }
 
@@ -393,7 +401,7 @@ class RestApiService {
     required String status,
     required String priority,
   }) async {
-    final response = await _dio.post<dynamic>(
+    final response = await _safePost(
       '/api/alerts/',
       data: <String, dynamic>{
         'title': title,
@@ -408,7 +416,7 @@ class RestApiService {
   }
 
   Future<Map<String, dynamic>> getAlert(int id) async {
-    final response = await _dio.get<dynamic>('/api/alerts/$id/');
+    final response = await _safeGet('/api/alerts/$id/');
     return _asMap(response.data);
   }
 
@@ -421,7 +429,7 @@ class RestApiService {
     required String status,
     required String priority,
   }) async {
-    final response = await _dio.put<dynamic>(
+    final response = await _safePut(
       '/api/alerts/$id/',
       data: <String, dynamic>{
         'title': title,
@@ -452,12 +460,12 @@ class RestApiService {
     if (status != null) data['status'] = status;
     if (priority != null) data['priority'] = priority;
 
-    final response = await _dio.patch<dynamic>('/api/alerts/$id/', data: data);
+    final response = await _safePatch('/api/alerts/$id/', data: data);
     return _asMap(response.data);
   }
 
   Future<void> deleteAlert(int id) async {
-    await _dio.delete<dynamic>('/api/alerts/$id/');
+    await _safeDelete('/api/alerts/$id/');
   }
 
   Future<List<dynamic>> listNearbyAlerts({
@@ -465,7 +473,7 @@ class RestApiService {
     required double lon,
     required int radius,
   }) async {
-    final response = await _dio.get<dynamic>(
+    final response = await _safeGet(
       '/api/alerts/nearby/',
       queryParameters: <String, dynamic>{
         'lat': lat,
@@ -523,6 +531,147 @@ class RestApiService {
     }
 
     return FormData.fromMap(formMap);
+  }
+
+  Future<Response<dynamic>> _safeGet(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+  }) async {
+    try {
+      return await _dio.get<dynamic>(
+        path,
+        queryParameters: queryParameters,
+      );
+    } on DioException catch (error) {
+      return _toErrorResponse(
+        path: path,
+        dioException: error,
+      );
+    } catch (error) {
+      return _toErrorResponse(
+        path: path,
+        error: error,
+      );
+    }
+  }
+
+  Future<Response<dynamic>> _safePost(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+  }) async {
+    try {
+      return await _dio.post<dynamic>(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+      );
+    } on DioException catch (error) {
+      return _toErrorResponse(
+        path: path,
+        dioException: error,
+      );
+    } catch (error) {
+      return _toErrorResponse(
+        path: path,
+        error: error,
+      );
+    }
+  }
+
+  Future<Response<dynamic>> _safePut(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+  }) async {
+    try {
+      return await _dio.put<dynamic>(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+      );
+    } on DioException catch (error) {
+      return _toErrorResponse(
+        path: path,
+        dioException: error,
+      );
+    } catch (error) {
+      return _toErrorResponse(
+        path: path,
+        error: error,
+      );
+    }
+  }
+
+  Future<Response<dynamic>> _safePatch(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+  }) async {
+    try {
+      return await _dio.patch<dynamic>(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+      );
+    } on DioException catch (error) {
+      return _toErrorResponse(
+        path: path,
+        dioException: error,
+      );
+    } catch (error) {
+      return _toErrorResponse(
+        path: path,
+        error: error,
+      );
+    }
+  }
+
+  Future<Response<dynamic>> _safeDelete(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+  }) async {
+    try {
+      return await _dio.delete<dynamic>(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+      );
+    } on DioException catch (error) {
+      return _toErrorResponse(
+        path: path,
+        dioException: error,
+      );
+    } catch (error) {
+      return _toErrorResponse(
+        path: path,
+        error: error,
+      );
+    }
+  }
+
+  Response<dynamic> _toErrorResponse({
+    required String path,
+    DioException? dioException,
+    Object? error,
+  }) {
+    if (dioException?.response != null) {
+      return dioException!.response!;
+    }
+
+    final String message =
+        dioException?.message ?? error?.toString() ?? 'Unknown API error';
+
+    return Response<dynamic>(
+      requestOptions:
+          dioException?.requestOptions ?? RequestOptions(path: path),
+      statusCode: -1,
+      statusMessage: message,
+      data: <String, dynamic>{
+        'error': message,
+      },
+    );
   }
 
   Map<String, dynamic> _asMap(dynamic data) {

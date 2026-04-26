@@ -1,6 +1,19 @@
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
+import 'package:go_router/go_router.dart';
+import 'package:rescue_app/service/auth_service.dart';
+import 'package:rescue_app/screens/home_screen.dart';
+import 'package:rescue_app/screens/sign_in_screen.dart';
+import 'package:rescue_app/screens/sign_up_screen.dart';
+
 class AppRoutePaths {
   const AppRoutePaths._();
 
+  static const String home = '/';
+  static const String signIn = '/sign-in';
+  static const String signUp = '/sign-up';
   static const String users = '/users';
   static const String events = '/events';
   static const String ptt = '/ptt';
@@ -33,3 +46,60 @@ class EventDeepLink {
     return null;
   }
 }
+
+class _GoRouterRefreshStream extends ChangeNotifier {
+  _GoRouterRefreshStream(Stream<dynamic> stream) {
+    _subscription = stream.asBroadcastStream().listen((_) {
+      notifyListeners();
+    });
+  }
+
+  late final StreamSubscription<dynamic> _subscription;
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+}
+
+final AuthService authService = AuthService();
+
+final GoRouter appRouter = GoRouter(
+  initialLocation: AppRoutePaths.signIn,
+  routes: <GoRoute>[
+    GoRoute(
+      path: AppRoutePaths.home,
+      builder: (context, state) => const HomeScreen(),
+    ),
+    GoRoute(
+      path: AppRoutePaths.signIn,
+      builder: (context, state) => const SignInScreen(),
+    ),
+    GoRoute(
+      path: AppRoutePaths.signUp,
+      builder: (context, state) => const SignUpScreen(),
+    ),
+  ],
+  redirect: (context, state) {
+    final bool isLoggedIn = FirebaseAuth.instance.currentUser != null;
+    final bool isAuthRoute = state.matchedLocation == AppRoutePaths.signIn ||
+        state.matchedLocation == AppRoutePaths.signUp;
+
+    if (!isLoggedIn && !isAuthRoute) {
+      return AppRoutePaths.signIn;
+    }
+
+    if (isLoggedIn && isAuthRoute) {
+      return AppRoutePaths.home;
+    }
+
+    return null;
+  },
+  refreshListenable: Listenable.merge([
+    authService,
+    _GoRouterRefreshStream(
+      FirebaseAuth.instance.authStateChanges(),
+    ),
+  ]),
+);
