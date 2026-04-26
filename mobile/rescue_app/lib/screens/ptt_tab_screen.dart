@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import 'dart:ui' show Color;
+
+Color _colorFromName(String name) {
+  final hash = name.codeUnits.fold(0, (h, c) => h * 31 + c);
+  final hue = (hash % 360).abs().toDouble();
+  return HSLColor.fromAHSL(1.0, hue, 0.55, 0.45).toColor();
+}
 
 class PttTabScreen extends StatefulWidget {
   const PttTabScreen({super.key});
@@ -42,30 +49,57 @@ class _PttTabScreenState extends State<PttTabScreen> {
                         ),
                         const SizedBox(height: 12),
                         Expanded(
-                          child: ListView.separated(
+                          child: GridView.builder(
+                            gridDelegate:
+                                const SliverGridDelegateWithMaxCrossAxisExtent(
+                              maxCrossAxisExtent: 96,
+                              mainAxisSpacing: 12,
+                              crossAxisSpacing: 12,
+                            ),
                             itemCount: groups.length,
-                            separatorBuilder: (context, index) =>
-                                const Divider(),
                             itemBuilder: (context, index) {
                               final isSelected = index == _selectedGroupIndex;
+                              final name = groups[index];
+                              final color = _colorFromName(name);
+                              final firstLetter = name
+                                  .split(' ')
+                                  .where((w) => w.isNotEmpty)
+                                  .map((w) => w.characters.first)
+                                  .join();
 
-                              return ListTile(
-                                contentPadding: EdgeInsets.zero,
-                                selected: isSelected,
+                              return GestureDetector(
                                 onTap: () {
                                   setState(() {
                                     _selectedGroupIndex = index;
                                   });
                                 },
-                                leading: Icon(
-                                  isSelected
-                                      ? Icons.radio_button_checked
-                                      : Icons.radio_button_off,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 28,
+                                      backgroundColor: color,
+                                      child: Text(
+                                        firstLetter,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    if (isSelected)
+                                      Container(
+                                        margin: const EdgeInsets.only(top: 4),
+                                        width: 8,
+                                        height: 8,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: color,
+                                        ),
+                                      ),
+                                  ],
                                 ),
-                                title: Text(groups[index]),
-                                trailing: isSelected
-                                    ? const Chip(label: Text('נבחר'))
-                                    : null,
                               );
                             },
                           ),

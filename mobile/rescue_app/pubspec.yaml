@@ -19,6 +19,12 @@ dependencies:
   intl: ^0.20.2
   firebase_messaging: ^15.2.10
   curved_labeled_navigation_bar: ^2.0.6
+  flutter_riverpod: ^3.3.1
+  flutter_callkit_incoming: ^3.0.0
+  wakelock_plus: ^1.5.2
+  permission_handler: ^12.0.1
+  vibration: ^3.1.8
+  uuid: ^4.5.3
 
 dev_dependencies:
   flutter_test:

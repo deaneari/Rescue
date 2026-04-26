@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'localization/language_constants.dart';
 import 'screens/home_screen.dart';
@@ -11,20 +12,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'אפליקציית הצלה',
-      supportedLocales: [
-        const Locale('en', ''), // English
-        const Locale('ar', ''), // Arabic
-      ],
-      localizationsDelegates: [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        VTranslation.delegate,
-      ],
-      home: const HomeScreen(),
+    return ProviderScope(
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'אפליקציית הצלה',
+        supportedLocales: [
+          const Locale('en', ''), // English
+          const Locale('ar', ''), // Arabic
+        ],
+        localizationsDelegates: [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          VTranslation.delegate,
+        ],
+        home: const HomeScreen(),
+      ),
     );
   }
 }
