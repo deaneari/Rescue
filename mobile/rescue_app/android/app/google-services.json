@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "631985219642",
+    "project_id": "rescue-alert-prod-12345",
+    "storage_bucket": "rescue-alert-prod-12345.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:631985219642:android:52253edb97222a6f986d03",
+        "android_client_info": {
+          "package_name": "com.example.rescue_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqljhNiUbVG_H22o-BnbNRIvxTCLitE-s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:631985219642:android:6d088cf8da682138986d03",
+        "android_client_info": {
+          "package_name": "com.navon.rescuealert"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqljhNiUbVG_H22o-BnbNRIvxTCLitE-s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

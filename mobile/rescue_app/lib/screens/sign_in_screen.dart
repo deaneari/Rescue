@@ -18,6 +18,7 @@ class _SignInScreenState extends State<SignInScreen> {
   final _passwordController = TextEditingController();
 
   bool _isLoading = false;
+  bool _obscurePassword = true;
   String? _errorMessage;
 
   @override
@@ -51,11 +52,11 @@ class _SignInScreenState extends State<SignInScreen> {
       }
     } on FirebaseAuthException catch (error) {
       setState(() {
-        _errorMessage = error.message ?? 'Sign in failed. Please try again.';
+        _errorMessage = error.message ?? 'ההתחברות נכשלה. נסה שוב.';
       });
     } catch (_) {
       setState(() {
-        _errorMessage = 'Unexpected error. Please try again.';
+        _errorMessage = 'שגיאה בלתי צפויה. נסה שוב.';
       });
     } finally {
       if (mounted) {
@@ -73,7 +74,7 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign In')),
+      appBar: AppBar(title: const Text('התחברות')),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -86,7 +87,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const Text(
-                      'Welcome back',
+                      'ברוך שובך',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -97,16 +98,16 @@ class _SignInScreenState extends State<SignInScreen> {
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: const InputDecoration(
-                        labelText: 'Email',
+                        labelText: 'אימייל',
                         border: OutlineInputBorder(),
                       ),
                       validator: (value) {
                         final text = value?.trim() ?? '';
                         if (text.isEmpty) {
-                          return 'Email is required';
+                          return 'יש להזין אימייל';
                         }
                         if (!text.contains('@')) {
-                          return 'Enter a valid email';
+                          return 'יש להזין אימייל תקין';
                         }
                         return null;
                       },
@@ -114,17 +115,38 @@ class _SignInScreenState extends State<SignInScreen> {
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: _passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Password',
+                      obscureText: _obscurePassword,
+                      decoration: InputDecoration(
+                        labelText: 'סיסמה',
                         border: OutlineInputBorder(),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                        ),
                       ),
                       validator: (value) {
                         if ((value ?? '').isEmpty) {
-                          return 'Password is required';
+                          return 'יש להזין סיסמה';
                         }
                         return null;
                       },
+                    ),
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: TextButton(
+                        onPressed: _isLoading
+                            ? null
+                            : () => context.push(AppRoutePaths.forgotPassword),
+                        child: const Text('שכחתי סיסמה'),
+                      ),
                     ),
                     if (_errorMessage != null) ...[
                       const SizedBox(height: 12),
@@ -146,13 +168,13 @@ class _SignInScreenState extends State<SignInScreen> {
                                 child:
                                     CircularProgressIndicator(strokeWidth: 2),
                               )
-                            : const Text('Sign In'),
+                            : const Text('התחברות'),
                       ),
                     ),
                     const SizedBox(height: 10),
                     TextButton(
                       onPressed: _isLoading ? null : _openSignUp,
-                      child: const Text('Create an account'),
+                      child: const Text('יצירת חשבון חדש'),
                     ),
                   ],
                 ),

@@ -68,9 +68,9 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: CurvedNavigationBar(
         index: _selectedIndex,
         items: _items,
-        color: Colors.purple.shade300,
-        buttonBackgroundColor: Colors.deepPurple,
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        // color: Colors.purple.shade300,
+        // buttonBackgroundColor: Colors.deepPurple,
+        // backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         animationDuration: const Duration(milliseconds: 300),
         height: 78,
         onTap: (index) {

@@ -1,0 +1,5 @@
+{
+    "MAPBOX_ACCESS_TOKEN": "pk.REPLACE_WITH_PRODUCTION_MAPBOX_TOKEN",
+    "ENV": "production",
+    "API_BASE_URL": "https://api.rescue-alert.app"
+}

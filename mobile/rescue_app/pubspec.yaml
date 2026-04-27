@@ -32,11 +32,32 @@ dependencies:
   firebase_auth: ^5.7.0
   mapbox_maps_flutter: ^2.22.0
   geolocator: ^14.0.2
+  flutter_dotenv: ^5.2.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  flutter_native_splash: ^2.4.6
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - .env.staging
+    - .env.production
+    - assets/images/
+    - assets/images/icons/
+    - assets/images/icons/navbar/
+    - assets/images/maps/
+
+flutter_native_splash:
+  color: "#FFFFFF"
+  image: web/icons/Icon-512.png
+  android: true
+  ios: true
+  web: false
+
+  android_12:
+    color: "#FFFFFF"
+    image: web/icons/Icon-512.png

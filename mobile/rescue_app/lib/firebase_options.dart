@@ -31,46 +31,47 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'REPLACE_WITH_API_KEY',
-    appId: 'REPLACE_WITH_WEB_APP_ID',
-    messagingSenderId: 'REPLACE_WITH_GCM_SENDER_ID',
-    projectId: 'REPLACE_WITH_PROJECT_ID',
-    authDomain: 'REPLACE_WITH_AUTH_DOMAIN',
-    storageBucket: 'REPLACE_WITH_STORAGE_BUCKET',
-    measurementId: 'REPLACE_WITH_MEASUREMENT_ID',
+    apiKey: 'AIzaSyDKVqBWCnBqz2xmebtiD-6VOEHkT4z_zMc',
+    appId: '1:631985219642:web:92e47bd81872c938986d03',
+    messagingSenderId: '631985219642',
+    projectId: 'rescue-alert-prod-12345',
+    authDomain: 'rescue-alert-prod-12345.firebaseapp.com',
+    storageBucket: 'rescue-alert-prod-12345.firebasestorage.app',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'REPLACE_WITH_API_KEY',
-    appId: 'REPLACE_WITH_ANDROID_APP_ID',
-    messagingSenderId: 'REPLACE_WITH_GCM_SENDER_ID',
-    projectId: 'REPLACE_WITH_PROJECT_ID',
-    storageBucket: 'REPLACE_WITH_STORAGE_BUCKET',
+    apiKey: 'AIzaSyDqljhNiUbVG_H22o-BnbNRIvxTCLitE-s',
+    appId: '1:631985219642:android:52253edb97222a6f986d03',
+    messagingSenderId: '631985219642',
+    projectId: 'rescue-alert-prod-12345',
+    storageBucket: 'rescue-alert-prod-12345.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'REPLACE_WITH_API_KEY',
-    appId: 'REPLACE_WITH_GOOGLE_APP_ID',
-    messagingSenderId: 'REPLACE_WITH_GCM_SENDER_ID',
-    projectId: 'REPLACE_WITH_PROJECT_ID',
-    storageBucket: 'REPLACE_WITH_STORAGE_BUCKET',
-    iosBundleId: 'com.example.rescue_app',
+    apiKey: 'AIzaSyAKl7I7GegtmykzFbqZRQSg1RrueOzuqOE',
+    appId: '1:631985219642:ios:aa3587e71b0138c0986d03',
+    messagingSenderId: '631985219642',
+    projectId: 'rescue-alert-prod-12345',
+    storageBucket: 'rescue-alert-prod-12345.firebasestorage.app',
+    iosBundleId: 'com.example.rescueApp',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'REPLACE_WITH_API_KEY',
-    appId: 'REPLACE_WITH_MACOS_APP_ID',
-    messagingSenderId: 'REPLACE_WITH_GCM_SENDER_ID',
-    projectId: 'REPLACE_WITH_PROJECT_ID',
-    storageBucket: 'REPLACE_WITH_STORAGE_BUCKET',
-    iosBundleId: 'com.example.rescue_app',
+    apiKey: 'AIzaSyAKl7I7GegtmykzFbqZRQSg1RrueOzuqOE',
+    appId: '1:631985219642:ios:aa3587e71b0138c0986d03',
+    messagingSenderId: '631985219642',
+    projectId: 'rescue-alert-prod-12345',
+    storageBucket: 'rescue-alert-prod-12345.firebasestorage.app',
+    iosBundleId: 'com.example.rescueApp',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'REPLACE_WITH_API_KEY',
-    appId: 'REPLACE_WITH_WINDOWS_APP_ID',
-    messagingSenderId: 'REPLACE_WITH_GCM_SENDER_ID',
-    projectId: 'REPLACE_WITH_PROJECT_ID',
-    storageBucket: 'REPLACE_WITH_STORAGE_BUCKET',
+    apiKey: 'AIzaSyDKVqBWCnBqz2xmebtiD-6VOEHkT4z_zMc',
+    appId: '1:631985219642:web:4d8e71d2efa6f7ec986d03',
+    messagingSenderId: '631985219642',
+    projectId: 'rescue-alert-prod-12345',
+    authDomain: 'rescue-alert-prod-12345.firebaseapp.com',
+    storageBucket: 'rescue-alert-prod-12345.firebasestorage.app',
   );
+
 }

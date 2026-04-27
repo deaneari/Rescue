@@ -1,0 +1,5 @@
+{
+    "MAPBOX_ACCESS_TOKEN": "pk.REPLACE_WITH_STAGING_MAPBOX_TOKEN",
+    "ENV": "staging",
+    "API_BASE_URL": "https://api-staging.rescue-alert.app"
+}

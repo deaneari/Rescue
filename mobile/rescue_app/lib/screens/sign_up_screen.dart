@@ -18,6 +18,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _confirmPasswordController = TextEditingController();
 
   bool _isLoading = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
   String? _errorMessage;
 
   @override
@@ -59,11 +61,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
       context.pop();
     } on FirebaseAuthException catch (error) {
       setState(() {
-        _errorMessage = error.message ?? 'Sign up failed. Please try again.';
+        _errorMessage = error.message ?? 'ההרשמה נכשלה. נסה שוב.';
       });
     } catch (_) {
       setState(() {
-        _errorMessage = 'Unexpected error. Please try again.';
+        _errorMessage = 'שגיאה בלתי צפויה. נסה שוב.';
       });
     } finally {
       if (mounted) {
@@ -77,7 +79,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign Up')),
+      appBar: AppBar(title: const Text('הרשמה')),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -90,7 +92,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const Text(
-                      'Create your account',
+                      'יצירת חשבון',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -101,16 +103,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: const InputDecoration(
-                        labelText: 'Email',
+                        labelText: 'אימייל',
                         border: OutlineInputBorder(),
                       ),
                       validator: (value) {
                         final text = value?.trim() ?? '';
                         if (text.isEmpty) {
-                          return 'Email is required';
+                          return 'יש להזין אימייל';
                         }
                         if (!text.contains('@')) {
-                          return 'Enter a valid email';
+                          return 'יש להזין אימייל תקין';
                         }
                         return null;
                       },
@@ -118,18 +120,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: _passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Password',
+                      obscureText: _obscurePassword,
+                      decoration: InputDecoration(
+                        labelText: 'סיסמה',
                         border: OutlineInputBorder(),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                        ),
                       ),
                       validator: (value) {
                         final text = value ?? '';
                         if (text.isEmpty) {
-                          return 'Password is required';
+                          return 'יש להזין סיסמה';
                         }
                         if (text.length < 6) {
-                          return 'Minimum 6 characters';
+                          return 'לפחות 6 תווים';
                         }
                         return null;
                       },
@@ -137,17 +151,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: _confirmPasswordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Confirm Password',
+                      obscureText: _obscureConfirmPassword,
+                      decoration: InputDecoration(
+                        labelText: 'אימות סיסמה',
                         border: OutlineInputBorder(),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _obscureConfirmPassword =
+                                  !_obscureConfirmPassword;
+                            });
+                          },
+                          icon: Icon(
+                            _obscureConfirmPassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                        ),
                       ),
                       validator: (value) {
                         if ((value ?? '').isEmpty) {
-                          return 'Please confirm password';
+                          return 'יש לאמת סיסמה';
                         }
                         if (value != _passwordController.text) {
-                          return 'Passwords do not match';
+                          return 'הסיסמאות אינן תואמות';
                         }
                         return null;
                       },
@@ -172,7 +199,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 child:
                                     CircularProgressIndicator(strokeWidth: 2),
                               )
-                            : const Text('Create Account'),
+                            : const Text('יצירת חשבון'),
                       ),
                     ),
                   ],

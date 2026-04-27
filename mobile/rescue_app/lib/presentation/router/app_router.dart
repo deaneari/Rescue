@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:rescue_app/service/auth_service.dart';
 import 'package:rescue_app/screens/home_screen.dart';
+import 'package:rescue_app/screens/forgot_password_screen.dart';
 import 'package:rescue_app/screens/sign_in_screen.dart';
 import 'package:rescue_app/screens/sign_up_screen.dart';
 
@@ -14,6 +15,7 @@ class AppRoutePaths {
   static const String home = '/';
   static const String signIn = '/sign-in';
   static const String signUp = '/sign-up';
+  static const String forgotPassword = '/forgot-password';
   static const String users = '/users';
   static const String events = '/events';
   static const String ptt = '/ptt';
@@ -80,11 +82,16 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutePaths.signUp,
       builder: (context, state) => const SignUpScreen(),
     ),
+    GoRoute(
+      path: AppRoutePaths.forgotPassword,
+      builder: (context, state) => const ForgotPasswordScreen(),
+    ),
   ],
   redirect: (context, state) {
     final bool isLoggedIn = FirebaseAuth.instance.currentUser != null;
     final bool isAuthRoute = state.matchedLocation == AppRoutePaths.signIn ||
-        state.matchedLocation == AppRoutePaths.signUp;
+        state.matchedLocation == AppRoutePaths.signUp ||
+        state.matchedLocation == AppRoutePaths.forgotPassword;
 
     if (!isLoggedIn && !isAuthRoute) {
       return AppRoutePaths.signIn;
