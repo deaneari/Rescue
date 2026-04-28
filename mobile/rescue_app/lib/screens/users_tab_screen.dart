@@ -5,6 +5,37 @@ class UsersTabScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 2,
+      child: Column(
+        children: [
+          const TabBar(
+            tabs: [
+              Tab(icon: Icon(Icons.person_outline), text: 'משתמשים'),
+              Tab(icon: Icon(Icons.groups_2_outlined), text: 'קבוצות'),
+            ],
+          ),
+          Expanded(
+            child: TabBarView(
+              children: [
+                _UsersList(context: context),
+                _GroupsList(context: context),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _UsersList extends StatelessWidget {
+  const _UsersList({required this.context});
+
+  final BuildContext context;
+
+  @override
+  Widget build(BuildContext _) {
     const users = <({String name, String role, bool available})>[
       (name: 'ארי דין', role: 'מוקדן', available: true),
       (name: 'מאיה צ׳ן', role: 'פרמדיקית', available: true),
@@ -40,6 +71,48 @@ class UsersTabScreen extends StatelessWidget {
                     ? Colors.green.shade100
                     : Colors.orange.shade100,
               ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _GroupsList extends StatelessWidget {
+  const _GroupsList({required this.context});
+
+  final BuildContext context;
+
+  @override
+  Widget build(BuildContext _) {
+    const groups = <({String name, String focus, int members})>[
+      (name: 'מוקד אלפא', focus: 'תיאום', members: 6),
+      (name: 'רפואה בראבו', focus: 'אמבולנס', members: 8),
+      (name: 'כיבוי צ׳רלי', focus: 'דיכוי אש', members: 5),
+      (name: 'לוגיסטיקה דלתא', focus: 'אספקה', members: 4),
+    ];
+
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        Text(
+          'קבוצות תגובה',
+          style: Theme.of(context).textTheme.headlineSmall,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'ניהול הקבוצות המבצעיות ורמות האיוש הנוכחיות שלהן.',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        const SizedBox(height: 16),
+        for (final group in groups)
+          Card(
+            margin: const EdgeInsets.only(bottom: 12),
+            child: ListTile(
+              leading: const Icon(Icons.groups_2_outlined),
+              title: Text(group.name),
+              subtitle: Text(group.focus),
+              trailing: Text('${group.members} חברים'),
             ),
           ),
       ],

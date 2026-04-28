@@ -5,7 +5,7 @@ class EventTabScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const events = <({String title, String status, String location})>[
+    const openEvents = <({String title, String status, String location})>[
       (
         title: 'התנגשות בצד הדרך',
         status: 'קריטי',
@@ -23,6 +23,50 @@ class EventTabScreen extends StatelessWidget {
       ),
     ];
 
+    const closedEvents = <({String title, String status, String location})>[
+      (
+        title: 'שריפת בניין',
+        status: 'קריטי',
+        location: 'קניון בעיר',
+      ),
+      (
+        title: 'תאונת עבודה',
+        status: 'גבוה',
+        location: 'מפעל בתעשיה',
+      ),
+    ];
+
+    return DefaultTabController(
+      length: 2,
+      child: Column(
+        children: [
+          TabBar(
+            tabs: [
+              Tab(text: 'open event (${openEvents.length})'),
+              Tab(text: 'closed events (${closedEvents.length})'),
+            ],
+          ),
+          Expanded(
+            child: TabBarView(
+              children: [
+                _EventsList(events: openEvents),
+                _EventsList(events: closedEvents),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EventsList extends StatelessWidget {
+  const _EventsList({required this.events});
+
+  final List<({String title, String status, String location})> events;
+
+  @override
+  Widget build(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:ui' show Color;
 
 Color _colorFromName(String name) {
   final hash = name.codeUnits.fold(0, (h, c) => h * 31 + c);

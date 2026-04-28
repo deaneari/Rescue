@@ -6,6 +6,8 @@ class AssetPaths {
   static const iconsDir = '$imagesDir/icons';
   static const mapsDir = '$imagesDir/maps';
 
+  static const appLogo = '$imagesDir/app_logo.png';
+
   static const sliderBgImage = '$imagesDir/sliderBg.svg';
   static const mtfIcon = '$imagesDir/mtf.png';
 

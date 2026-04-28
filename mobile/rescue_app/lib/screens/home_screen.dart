@@ -1,11 +1,20 @@
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/experimental/persist.dart';
+import 'package:rescue_app/managers/storage_manager.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+
+import 'package:rescue_app/constants/asset_paths.dart';
 
 import 'event_tab_screen.dart';
-import 'groups_tab_screen.dart';
+import 'about_screen.dart';
+import 'history_tab_screen.dart';
 import 'map_tab_screen.dart';
 import 'ptt_tab_screen.dart';
+import 'settings_screen.dart';
+import 'user_details_screen.dart';
 import 'users_tab_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -22,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
     'משתמשים',
     'אירועים',
     'PTT',
-    'קבוצות',
+    'היסטוריה',
     'מפה',
   ];
 
@@ -40,8 +49,8 @@ class _HomeScreenState extends State<HomeScreen> {
       label: 'PTT',
     ),
     CurvedNavigationBarItem(
-      child: Icon(Icons.groups),
-      label: 'קבוצות',
+      child: Icon(Icons.history),
+      label: 'היסטוריה',
     ),
     CurvedNavigationBarItem(
       child: Icon(Icons.map),
@@ -53,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
     UsersTabScreen(),
     EventTabScreen(),
     PttTabScreen(),
-    GroupsTabScreen(),
+    HistoryTabScreen(),
     MapTabScreen(),
   ];
 
@@ -61,6 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(_titles[_selectedIndex])),
+      drawer: _buildDrawer(context),
       body: IndexedStack(
         index: _selectedIndex,
         children: _screens,
@@ -78,6 +88,131 @@ class _HomeScreenState extends State<HomeScreen> {
             _selectedIndex = index;
           });
         },
+      ),
+    );
+  }
+
+  void _showLogoutAlert(BuildContext context) {
+    Alert(
+      context: context,
+      title: 'logout',
+      desc: 'are you sure you wish to logout',
+      buttons: [
+        DialogButton(
+          onPressed: () async {
+            await FirebaseAuth.instance.signOut();
+            await StorageManager.instance.logout();
+            // if (context.mounted) {
+            //   Navigator.pop(context);
+            // }
+          },
+          child: const Text(
+            'OK',
+            style: TextStyle(color: Colors.white, fontSize: 18),
+          ),
+        ),
+        DialogButton(
+          onPressed: () {
+            Navigator.of(context, rootNavigator: true).pop();
+          },
+          color: Colors.grey,
+          child: const Text(
+            'Cancel',
+            style: TextStyle(color: Colors.white, fontSize: 18),
+          ),
+        ),
+      ],
+    ).show();
+  }
+
+  Widget _buildDrawer(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  radius: 40,
+                  backgroundColor: Colors.white,
+                  child: ClipOval(
+                    child: Image.asset(
+                      AssetPaths.appLogo,
+                      height: 74,
+                      width: 74,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'מלאכים בדרכים',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings),
+            title: const Text('settings'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const SettingsScreen(),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.person),
+            title: const Text('user details'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const UserDetailsScreen(),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.info),
+            title: const Text('about'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const AboutScreen(),
+                ),
+              );
+            },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.logout, color: Colors.red),
+            title: const Text(
+              'logout',
+              style: TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            onTap: () {
+              _showLogoutAlert(context);
+            },
+          ),
+        ],
       ),
     );
   }
