@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
-import 'package:rescue_app/service/auth_service.dart';
 import 'package:rescue_app/screens/home_screen.dart';
 import 'package:rescue_app/screens/forgot_password_screen.dart';
 import 'package:rescue_app/screens/sign_in_screen.dart';
@@ -65,8 +64,6 @@ class _GoRouterRefreshStream extends ChangeNotifier {
   }
 }
 
-final AuthService authService = AuthService();
-
 final GoRouter appRouter = GoRouter(
   initialLocation: AppRoutePaths.signIn,
   routes: <GoRoute>[
@@ -103,10 +100,7 @@ final GoRouter appRouter = GoRouter(
 
     return null;
   },
-  refreshListenable: Listenable.merge([
-    authService,
-    _GoRouterRefreshStream(
-      FirebaseAuth.instance.authStateChanges(),
-    ),
-  ]),
+  refreshListenable: _GoRouterRefreshStream(
+    FirebaseAuth.instance.authStateChanges(),
+  ),
 );

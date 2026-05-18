@@ -2,12 +2,10 @@ import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/experimental/persist.dart';
+import 'package:rescue_app/domain/services/api/rest_api_service.dart';
 import 'package:rescue_app/managers/storage_manager.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-
 import 'package:rescue_app/constants/asset_paths.dart';
-
 import 'event_tab_screen.dart';
 import 'about_screen.dart';
 import 'history_tab_screen.dart';
@@ -65,6 +63,12 @@ class _HomeScreenState extends State<HomeScreen> {
     HistoryTabScreen(),
     MapTabScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    testApi();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -215,5 +219,15 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+  }
+
+  Future testApi() async {
+    RestApiService api = RestApiService();
+    try {
+      final users = await api.listUsersWithCoordinates();
+      print('users with coordinates: $users');
+    } catch (e) {
+      print('error fetching user details: $e');
+    }
   }
 }

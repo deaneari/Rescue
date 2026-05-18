@@ -1,6 +1,11 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:rescue_app/constants/app_env.dart';
 import 'package:rescue_app/managers/storage_manager.dart';
+import 'package:rescue_app/models/app_message.dart';
+import 'package:rescue_app/models/user_group.dart';
+import 'package:rescue_app/models/user_location.dart';
 
 import 'rest_api_models.dart';
 
@@ -41,14 +46,115 @@ class RestApiService {
   String? get accessToken => _accessToken;
   String? get refreshToken => _refreshToken;
 
-  void setTokens({required String access, required String refresh}) {
+  void dispose() => _dio.close();
+
+  Future<void> setAuthToken(
+      {required String access, required String refresh}) async {
     _accessToken = access;
     _refreshToken = refresh;
+    _dio.options.headers['Authorization'] = 'Bearer $_accessToken';
+    _dio.options.headers['Content-Type'] = 'application/json';
+  }
+
+  Future<void> setAccessAuthToken({required String access}) async {
+    _accessToken = access;
+    _dio.options.headers['Authorization'] = 'Bearer $_accessToken';
+    _dio.options.headers['Content-Type'] = 'application/json';
   }
 
   void clearTokens() {
     _accessToken = null;
     _refreshToken = null;
+    _dio.options.headers.remove('Authorization');
+  }
+
+  Future<void> postCurrentLocation({
+    required double latitude,
+    required double longitude,
+  }) async {
+    await _dio.post(
+      '/locations/current',
+      data: {'latitude': latitude, 'longitude': longitude},
+    );
+  }
+
+  Future<List<UserLocation>> getAllUsersLocation() async {
+    final response = await _dio.get('/locations');
+    final list = (response.data as List<dynamic>? ?? const [])
+        .map((item) => UserLocation.fromJson(item as Map<String, dynamic>))
+        .toList();
+    return list;
+  }
+
+  Future<List<AppMessage>> getMessages() async {
+    final response = await _dio.get('/messages');
+    final list = (response.data as List<dynamic>? ?? const [])
+        .map((item) => AppMessage.fromJson(item as Map<String, dynamic>))
+        .toList();
+    return list;
+  }
+
+  Future<List<UserGroup>> getUserGroups() async {
+    final response = await _dio.get('/groups');
+    return (response.data as List<dynamic>? ?? const [])
+        .map((item) => UserGroup.fromJson(item as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<List<Map<String, dynamic>>> getUsersInGroup(String groupId) async {
+    final response = await _dio.get('/groups/$groupId/users');
+    return (response.data as List<dynamic>? ?? const [])
+        .cast<Map<String, dynamic>>();
+  }
+
+  Future<void> addUserToGroup({
+    required String groupId,
+    required String userId,
+  }) async {
+    await _dio.post('/groups/$groupId/users', data: {'userId': userId});
+  }
+
+  Future<void> removeUserFromGroup({
+    required String groupId,
+    required String userId,
+  }) async {
+    await _dio.delete('/groups/$groupId/users/$userId');
+  }
+
+  Future<AppMessage> getMessageById(String id) async {
+    final response = await _dio.get('/messages/$id');
+    return AppMessage.fromJson(response.data as Map<String, dynamic>);
+  }
+
+  Future<void> postMessage({
+    required String title,
+    required String text,
+    Uint8List? voicePayload,
+  }) async {
+    final data = FormData.fromMap({
+      'title': title,
+      'text': text,
+      if (voicePayload != null)
+        'voice': MultipartFile.fromBytes(
+          voicePayload,
+          filename: 'voice_note.m4a',
+        ),
+    });
+    await _dio.post('/messages', data: data);
+  }
+
+  Future<void> registerDevice({
+    required String fcmToken,
+    required String deviceId,
+    required String platform,
+    required String deviceModel,
+  }) async {
+    await _dio.post('/notifications/token', data: {
+      'fcm_token': fcmToken,
+      'device_id': deviceId,
+      'platform': platform,
+      'device_model': deviceModel,
+    });
   }
 
   Future<JwtTokens> obtainToken({
@@ -64,7 +170,7 @@ class RestApiService {
     );
 
     final tokens = JwtTokens.fromJson(_asMap(response.data));
-    setTokens(access: tokens.access, refresh: tokens.refresh);
+    setAuthToken(access: tokens.access, refresh: tokens.refresh);
     return tokens;
   }
 
@@ -237,27 +343,27 @@ class RestApiService {
     await _safeDelete('/api/group/$id/');
   }
 
-  Future<Map<String, dynamic>> addUserToGroup({
-    required int groupId,
-    required int userId,
-  }) async {
-    final response = await _safePost(
-      '/api/group/$groupId/add_user/',
-      data: <String, dynamic>{'user_id': userId},
-    );
-    return _asMap(response.data);
-  }
+  // Future<Map<String, dynamic>> addUserToGroup({
+  //   required int groupId,
+  //   required int userId,
+  // }) async {
+  //   final response = await _safePost(
+  //     '/api/group/$groupId/add_user/',
+  //     data: <String, dynamic>{'user_id': userId},
+  //   );
+  //   return _asMap(response.data);
+  // }
 
-  Future<Map<String, dynamic>> removeUserFromGroup({
-    required int groupId,
-    required int userId,
-  }) async {
-    final response = await _safeDelete(
-      '/api/group/$groupId/remove_user/',
-      data: <String, dynamic>{'user_id': userId},
-    );
-    return _asMap(response.data);
-  }
+  // Future<Map<String, dynamic>> removeUserFromGroup({
+  //   required int groupId,
+  //   required int userId,
+  // }) async {
+  //   final response = await _safeDelete(
+  //     '/api/group/$groupId/remove_user/',
+  //     data: <String, dynamic>{'user_id': userId},
+  //   );
+  //   return _asMap(response.data);
+  // }
 
   Future<List<dynamic>> listMessages() async {
     final response = await _safeGet('/api/message/');

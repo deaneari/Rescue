@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rescue_app/main.dart';
+import 'package:rescue_app/screens/rescue_alert_app.dart';
 
 void main() {
   testWidgets('renders four bottom tabs and switches screens', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(const RescueAlertApp());
     await tester.pumpAndSettle();
 
     expect(find.text('צוות תגובה פעיל'), findsOneWidget);
