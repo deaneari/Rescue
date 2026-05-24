@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:rescue_app/domain/services/api/rest_api_service.dart';
 import 'package:rescue_app/models/identity_user_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -102,14 +103,16 @@ class StorageManager {
     }
 
     final IdentityUserData? existingIdentity = await getBearer();
-    await setBearer(
-      IdentityUserData(
-        email: email,
-        accessToken: token,
-        activeBillingAccount: existingIdentity?.activeBillingAccount ?? false,
-        isAdmin: existingIdentity?.isAdmin ?? false,
-      ),
-    );
+    if (existingIdentity != null) {
+      await setBearer(
+        IdentityUserData(
+          email: email,
+          accessToken: token,
+          activeBillingAccount: existingIdentity.activeBillingAccount ?? false,
+          isAdmin: existingIdentity.isAdmin,
+        ),
+      );
+    }
   }
 
   Future<void> syncFirebaseUser(User user, {bool forceRefresh = false}) async {
@@ -117,6 +120,8 @@ class StorageManager {
     if (idToken == null || idToken.isEmpty) {
       return;
     }
+
+    await RestApiService().setAccessAuthToken(access: idToken);
 
     await setFirebaseUserToken(
       email: user.email ?? '',

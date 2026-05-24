@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rescue_app/managers/storage_manager.dart';
 import 'package:rescue_app/screens/home_screen.dart';
 import 'package:rescue_app/screens/forgot_password_screen.dart';
 import 'package:rescue_app/screens/sign_in_screen.dart';
@@ -49,13 +50,23 @@ class EventDeepLink {
 }
 
 class _GoRouterRefreshStream extends ChangeNotifier {
-  _GoRouterRefreshStream(Stream<dynamic> stream) {
-    _subscription = stream.asBroadcastStream().listen((_) {
+  _GoRouterRefreshStream(Stream<User?> stream) {
+    final User? currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      unawaited(StorageManager.instance.syncFirebaseUser(currentUser));
+    }
+
+    _subscription = stream.asBroadcastStream().listen((user) async {
+      if (user == null) {
+        await StorageManager.instance.logout();
+      } else {
+        await StorageManager.instance.syncFirebaseUser(user);
+      }
       notifyListeners();
     });
   }
 
-  late final StreamSubscription<dynamic> _subscription;
+  late final StreamSubscription<User?> _subscription;
 
   @override
   void dispose() {
@@ -65,7 +76,9 @@ class _GoRouterRefreshStream extends ChangeNotifier {
 }
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: AppRoutePaths.signIn,
+  initialLocation: FirebaseAuth.instance.currentUser == null
+      ? AppRoutePaths.signIn
+      : AppRoutePaths.home,
   routes: <GoRoute>[
     GoRoute(
       path: AppRoutePaths.home,

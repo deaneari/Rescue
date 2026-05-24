@@ -193,11 +193,11 @@ class _MapTabScreenState extends State<MapTabScreen> {
     }
 
     // Standard style supports import config language override.
-    try {
-      await map.style.setStyleImportConfigProperty('basemap', 'language', 'he');
-    } catch (_) {
-      // Ignore for styles that do not expose the basemap language config.
-    }
+    // try {
+    //   await map.style.setStyleImportConfigProperty('basemap', 'language', 'he');
+    // } catch (_) {
+    //   // Ignore for styles that do not expose the basemap language config.
+    // }
   }
 
   Future<void> _restoreLastCamera() async {

@@ -47,8 +47,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
       final User? user = credential.user;
       if (user != null) {
-        await StorageManager.instance
-            .syncFirebaseUser(user, forceRefresh: true);
+        await StorageManager.instance.syncFirebaseUser(user);
       }
     } on FirebaseAuthException catch (error) {
       setState(() {

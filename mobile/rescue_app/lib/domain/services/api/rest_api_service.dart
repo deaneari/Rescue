@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:rescue_app/constants/app_env.dart';
 import 'package:rescue_app/managers/storage_manager.dart';
 import 'package:rescue_app/models/app_message.dart';
@@ -12,7 +14,10 @@ import 'rest_api_models.dart';
 class RestApiService {
   static final String baseUrl = AppEnv.apiBaseUrl;
 
-  RestApiService()
+  static final RestApiService _instance = RestApiService._internal();
+  factory RestApiService() => _instance;
+
+  RestApiService._internal()
       : _dio = Dio(
           BaseOptions(
             baseUrl: baseUrl,
@@ -62,6 +67,27 @@ class RestApiService {
     _dio.options.headers['Content-Type'] = 'application/json';
   }
 
+  bool hasDioHeaders() {
+    return _dio.options.headers.containsKey('Authorization') &&
+        _dio.options.headers['Authorization'] != null;
+  }
+
+  Future<bool> checkDioHeaders() async {
+    if (hasDioHeaders()) {
+      return true;
+    } else {
+      final User? currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        final String? token = await currentUser.getIdToken();
+        if (token != null && token.isNotEmpty) {
+          await setAccessAuthToken(access: token);
+          return true;
+        }
+      }
+      return false;
+    }
+  }
+
   void clearTokens() {
     _accessToken = null;
     _refreshToken = null;
@@ -72,58 +98,154 @@ class RestApiService {
     required double latitude,
     required double longitude,
   }) async {
-    await _dio.post(
-      '/locations/current',
-      data: {'latitude': latitude, 'longitude': longitude},
-    );
+    try {
+      if (!await checkDioHeaders()) {
+        return;
+      }
+
+      await _dio.post(
+        '/locations/current',
+        data: {'latitude': latitude, 'longitude': longitude},
+      );
+    } on DioException catch (e) {
+      debugPrint('postCurrentLocation error: ${e.message}');
+      return;
+    } catch (e) {
+      debugPrint('postCurrentLocation error: $e');
+      return;
+    }
   }
 
   Future<List<UserLocation>> getAllUsersLocation() async {
-    final response = await _dio.get('/locations');
-    final list = (response.data as List<dynamic>? ?? const [])
-        .map((item) => UserLocation.fromJson(item as Map<String, dynamic>))
-        .toList();
-    return list;
+    try {
+      if (!await checkDioHeaders()) {
+        return [];
+      }
+
+      final response = await _dio.get('/locations');
+      final list = (response.data as List<dynamic>? ?? const [])
+          .map((item) => UserLocation.fromJson(item as Map<String, dynamic>))
+          .toList();
+      return list;
+    } on DioException catch (e) {
+      debugPrint('getAllUsersLocation error: ${e.message}');
+      return [];
+    } catch (e) {
+      debugPrint('getAllUsersLocation error: $e');
+      return [];
+    }
   }
 
   Future<List<AppMessage>> getMessages() async {
-    final response = await _dio.get('/messages');
-    final list = (response.data as List<dynamic>? ?? const [])
-        .map((item) => AppMessage.fromJson(item as Map<String, dynamic>))
-        .toList();
-    return list;
+    try {
+      if (!await checkDioHeaders()) {
+        return [];
+      }
+
+      final response = await _dio.get('/messages');
+      final list = (response.data as List<dynamic>? ?? const [])
+          .map((item) => AppMessage.fromJson(item as Map<String, dynamic>))
+          .toList();
+      return list;
+    } on DioException catch (e) {
+      debugPrint('getMessages error: ${e.message}');
+      return [];
+    } catch (e) {
+      debugPrint('getMessages error: $e');
+      return [];
+    }
   }
 
   Future<List<UserGroup>> getUserGroups() async {
-    final response = await _dio.get('/groups');
-    return (response.data as List<dynamic>? ?? const [])
-        .map((item) => UserGroup.fromJson(item as Map<String, dynamic>))
-        .toList();
+    try {
+      if (!await checkDioHeaders()) {
+        return [];
+      }
+
+      final response = await _dio.get('/group');
+      return (response.data as List<dynamic>? ?? const [])
+          .map((item) => UserGroup.fromJson(item as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      debugPrint('getUserGroups error: ${e.message}');
+      return [];
+    } catch (e) {
+      debugPrint('getUserGroups error: $e');
+      return [];
+    }
   }
 
   Future<List<Map<String, dynamic>>> getUsersInGroup(String groupId) async {
-    final response = await _dio.get('/groups/$groupId/users');
-    return (response.data as List<dynamic>? ?? const [])
-        .cast<Map<String, dynamic>>();
+    try {
+      if (!await checkDioHeaders()) {
+        return [];
+      }
+
+      final response = await _dio.get('/groups/$groupId/users');
+      return (response.data as List<dynamic>? ?? const [])
+          .cast<Map<String, dynamic>>();
+    } on DioException catch (e) {
+      debugPrint('getUsersInGroup error: ${e.message}');
+      return [];
+    } catch (e) {
+      debugPrint('getUsersInGroup error: $e');
+      return [];
+    }
   }
 
   Future<void> addUserToGroup({
     required String groupId,
     required String userId,
   }) async {
-    await _dio.post('/groups/$groupId/users', data: {'userId': userId});
+    try {
+      if (!await checkDioHeaders()) {
+        return;
+      }
+
+      await _dio.post('/groups/$groupId/users', data: {'userId': userId});
+    } on DioException catch (e) {
+      debugPrint('addUserToGroup error: ${e.message}');
+      return;
+    } catch (e) {
+      debugPrint('addUserToGroup error: $e');
+      return;
+    }
   }
 
   Future<void> removeUserFromGroup({
     required String groupId,
     required String userId,
   }) async {
-    await _dio.delete('/groups/$groupId/users/$userId');
+    try {
+      if (!await checkDioHeaders()) {
+        return;
+      }
+
+      await _dio.delete('/groups/$groupId/users/$userId');
+    } on DioException catch (e) {
+      debugPrint('removeUserFromGroup error: ${e.message}');
+      return;
+    } catch (e) {
+      debugPrint('removeUserFromGroup error: $e');
+      return;
+    }
   }
 
   Future<AppMessage> getMessageById(String id) async {
-    final response = await _dio.get('/messages/$id');
-    return AppMessage.fromJson(response.data as Map<String, dynamic>);
+    try {
+      if (!await checkDioHeaders()) {
+        return _emptyAppMessage();
+      }
+
+      final response = await _dio.get('/messages/$id');
+      return AppMessage.fromJson(response.data as Map<String, dynamic>);
+    } on DioException catch (e) {
+      debugPrint('getMessageById error: ${e.message}');
+      return _emptyAppMessage();
+    } catch (e) {
+      debugPrint('getMessageById error: $e');
+      return _emptyAppMessage();
+    }
   }
 
   Future<void> postMessage({
@@ -131,16 +253,28 @@ class RestApiService {
     required String text,
     Uint8List? voicePayload,
   }) async {
-    final data = FormData.fromMap({
-      'title': title,
-      'text': text,
-      if (voicePayload != null)
-        'voice': MultipartFile.fromBytes(
-          voicePayload,
-          filename: 'voice_note.m4a',
-        ),
-    });
-    await _dio.post('/messages', data: data);
+    try {
+      if (!await checkDioHeaders()) {
+        return;
+      }
+
+      final data = FormData.fromMap({
+        'title': title,
+        'text': text,
+        if (voicePayload != null)
+          'voice': MultipartFile.fromBytes(
+            voicePayload,
+            filename: 'voice_note.m4a',
+          ),
+      });
+      await _dio.post('/messages', data: data);
+    } on DioException catch (e) {
+      debugPrint('postMessage error: ${e.message}');
+      return;
+    } catch (e) {
+      debugPrint('postMessage error: $e');
+      return;
+    }
   }
 
   Future<void> registerDevice({
@@ -149,12 +283,24 @@ class RestApiService {
     required String platform,
     required String deviceModel,
   }) async {
-    await _dio.post('/notifications/token', data: {
-      'fcm_token': fcmToken,
-      'device_id': deviceId,
-      'platform': platform,
-      'device_model': deviceModel,
-    });
+    try {
+      if (!await checkDioHeaders()) {
+        return;
+      }
+
+      await _dio.post('/notifications/token', data: {
+        'fcm_token': fcmToken,
+        'device_id': deviceId,
+        'platform': platform,
+        'device_model': deviceModel,
+      });
+    } on DioException catch (e) {
+      debugPrint('registerDevice error: ${e.message}');
+      return;
+    } catch (e) {
+      debugPrint('registerDevice error: $e');
+      return;
+    }
   }
 
   Future<JwtTokens> obtainToken({
@@ -642,6 +788,13 @@ class RestApiService {
     Map<String, dynamic>? queryParameters,
   }) async {
     try {
+      if (!await checkDioHeaders()) {
+        return _toErrorResponse(
+          path: path,
+          error: StateError('Missing authorization headers'),
+        );
+      }
+
       return await _dio.get<dynamic>(
         path,
         queryParameters: queryParameters,
@@ -665,6 +818,13 @@ class RestApiService {
     Map<String, dynamic>? queryParameters,
   }) async {
     try {
+      if (!await checkDioHeaders()) {
+        return _toErrorResponse(
+          path: path,
+          error: StateError('Missing authorization headers'),
+        );
+      }
+
       return await _dio.post<dynamic>(
         path,
         data: data,
@@ -689,6 +849,13 @@ class RestApiService {
     Map<String, dynamic>? queryParameters,
   }) async {
     try {
+      if (!await checkDioHeaders()) {
+        return _toErrorResponse(
+          path: path,
+          error: StateError('Missing authorization headers'),
+        );
+      }
+
       return await _dio.put<dynamic>(
         path,
         data: data,
@@ -713,6 +880,13 @@ class RestApiService {
     Map<String, dynamic>? queryParameters,
   }) async {
     try {
+      if (!await checkDioHeaders()) {
+        return _toErrorResponse(
+          path: path,
+          error: StateError('Missing authorization headers'),
+        );
+      }
+
       return await _dio.patch<dynamic>(
         path,
         data: data,
@@ -737,6 +911,13 @@ class RestApiService {
     Map<String, dynamic>? queryParameters,
   }) async {
     try {
+      if (!await checkDioHeaders()) {
+        return _toErrorResponse(
+          path: path,
+          error: StateError('Missing authorization headers'),
+        );
+      }
+
       return await _dio.delete<dynamic>(
         path,
         data: data,
@@ -775,6 +956,19 @@ class RestApiService {
       data: <String, dynamic>{
         'error': message,
       },
+    );
+  }
+
+  AppMessage _emptyAppMessage() {
+    return AppMessage(
+      id: '',
+      title: '',
+      text: '',
+      audioUrl: null,
+      createdAt: DateTime.fromMillisecondsSinceEpoch(0),
+      userMetadata: const <String, dynamic>{},
+      latitude: null,
+      longitude: null,
     );
   }
 

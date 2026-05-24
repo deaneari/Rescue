@@ -64,11 +64,11 @@ class _HomeScreenState extends State<HomeScreen> {
     MapTabScreen(),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    testApi();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   testApi();
+  // }
 
   @override
   Widget build(BuildContext context) {

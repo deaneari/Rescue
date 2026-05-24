@@ -51,8 +51,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       final User? user = credential.user;
       if (user != null) {
-        await StorageManager.instance
-            .syncFirebaseUser(user, forceRefresh: true);
+        await StorageManager.instance.syncFirebaseUser(user);
       }
 
       if (!mounted) {
