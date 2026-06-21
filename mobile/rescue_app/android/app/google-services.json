@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:631985219642:android:52253edb97222a6f986d03",
         "android_client_info": {
-          "package_name": "com.example.rescue_app"
+          "package_name": "com.rescue.alert"
         }
       },
       "oauth_client": [],
@@ -28,7 +28,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:631985219642:android:6d088cf8da682138986d03",
         "android_client_info": {
-          "package_name": "com.navon.rescuealert"
+          "package_name": "com.rescue.alert"
         }
       },
       "oauth_client": [],

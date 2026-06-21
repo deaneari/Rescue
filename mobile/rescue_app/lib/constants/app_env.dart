@@ -13,7 +13,8 @@ class AppEnv {
   static String get env => dotenv.env['ENV'] ?? 'staging';
 
   static String get apiBaseUrl {
-    return dotenv.env['API_BASE_URL'] ?? 'https://rescue-team.netlify.app';
+    return dotenv.env['API_BASE_URL'] ??
+        'https://rescue-alert-system-malachim-badrachim.navonsimon.com';
   }
 
   static bool get isProduction => env == 'production';
