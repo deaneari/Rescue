@@ -22,6 +22,7 @@ class RestApiService {
             connectTimeout: const Duration(seconds: 20),
             receiveTimeout: const Duration(seconds: 20),
             sendTimeout: const Duration(seconds: 20),
+            contentType: Headers.jsonContentType,
           ),
         ) {
     _dio.interceptors.add(
@@ -56,13 +57,13 @@ class RestApiService {
     _accessToken = access;
     _refreshToken = refresh;
     _dio.options.headers['Authorization'] = 'Bearer $_accessToken';
-    _dio.options.headers['Content-Type'] = 'application/json';
+    _dio.options.headers['Content-Type'] = Headers.jsonContentType;
   }
 
   Future<void> setAccessAuthToken({required String access}) async {
     _accessToken = access;
     _dio.options.headers['Authorization'] = 'Bearer $_accessToken';
-    _dio.options.headers['Content-Type'] = 'application/json';
+    _dio.options.headers['Content-Type'] = Headers.jsonContentType;
   }
 
   bool hasDioHeaders() {
@@ -104,6 +105,11 @@ class RestApiService {
       await _dio.post(
         '/locations/current',
         data: {'latitude': latitude, 'longitude': longitude},
+        // options: Options(
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        // ),
       );
     } on DioException catch (e) {
       debugPrint('postCurrentLocation error: ${e.message}');
@@ -160,7 +166,14 @@ class RestApiService {
         return [];
       }
 
-      final response = await _dio.get('/group');
+      final response = await _dio.get(
+        '/group',
+        options: Options(
+          headers: {
+            "Content-Type": "application/json",
+          },
+        ),
+      );
       return (response.data as List<dynamic>? ?? const [])
           .map((item) => UserGroup.fromJson(item as Map<String, dynamic>))
           .toList();
@@ -200,7 +213,15 @@ class RestApiService {
         return;
       }
 
-      await _dio.post('/groups/$groupId/users', data: {'userId': userId});
+      await _dio.post(
+        '/groups/$groupId/users',
+        data: {'userId': userId},
+        // options: Options(
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        // ),
+      );
     } on DioException catch (e) {
       debugPrint('addUserToGroup error: ${e.message}');
       return;
@@ -265,7 +286,15 @@ class RestApiService {
             filename: 'voice_note.m4a',
           ),
       });
-      await _dio.post('/messages', data: data);
+      await _dio.post(
+        '/messages',
+        data: data,
+        // options: Options(
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        // ),
+      );
     } on DioException catch (e) {
       debugPrint('postMessage error: ${e.message}');
       return;
@@ -286,12 +315,20 @@ class RestApiService {
         return;
       }
 
-      await _dio.post('/notifications/token', data: {
-        'fcm_token': fcmToken,
-        'device_id': deviceId,
-        'platform': platform,
-        'device_model': deviceModel,
-      });
+      await _dio.post(
+        '/notifications/token',
+        data: {
+          'fcm_token': fcmToken,
+          'device_id': deviceId,
+          'platform': platform,
+          'device_model': deviceModel,
+        },
+        // options: Options(
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        // ),
+      );
     } on DioException catch (e) {
       debugPrint('registerDevice error: ${e.message}');
       return;
